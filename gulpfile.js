@@ -22,6 +22,8 @@ const sass = require('gulp-sass');
 const imagemin = require('gulp-imagemin');
 //Модуль переименовывания файлов
 const rename = require('gulp-rename');
+//Модуль обьеденения медиа запросов
+const gcmq = require('gulp-group-css-media-queries');
 //Модуль вывода ошибок
 const plumber = require('gulp-plumber');
 //Модуль переноса файлов из bower в gulp
@@ -69,6 +71,8 @@ gulp.task('styles', () => {
       .pipe(sourcemaps.init())
       //Указать stylus() , sass() или less()
       .pipe(sass())
+      //Объединение медиа запросов
+      .pipe(gcmq())
       //Объединение файлов в один
       .pipe(concat('style.css'))
       //Добавить префиксы
