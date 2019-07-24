@@ -34,6 +34,7 @@ const mainBowerFiles = require('main-bower-files');
 const styleFiles = [
    './src/main_files/**/*.css',
    './src/scss/**/*.scss',
+   './src/scss/**/*.css',
    './src/scss/**/*.sass'
 ]
 //Порядок подключения js файлов
@@ -135,6 +136,12 @@ gulp.task('img-compress', ()=> {
    .pipe(gulp.dest('./build/img/'))
 });
 
+//Таск для переноса шрифтов в папку build
+gulp.task('fonts', ()=> {
+   return gulp.src('./src/fonts/**/*')
+   .pipe(gulp.dest('./build/fonts/'))
+});
+
 //Таск для отслеживания изменений в файлах
 gulp.task('watch', () => {
    browserSync.init({
@@ -155,4 +162,4 @@ gulp.task('watch', () => {
 });
 
 //Таск по умолчанию, Запускает del, styles, scripts, img-compress и watch
-gulp.task('default', gulp.series('del', gulp.parallel('html', 'styles', 'scripts', 'img-compress'), 'watch'));
+gulp.task('default', gulp.series('del', gulp.parallel('html', 'styles', 'scripts', 'img-compress', 'fonts'), 'watch'));
