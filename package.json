@@ -23,6 +23,7 @@
     "gulp-uglify": "^3.0.1",
     "imagemin-jpeg-recompress": "^6.0.0",
     "imagemin-pngquant": "^6.0.1",
+    "node-bourbon": "^4.2.8",
     "main-bower-files": "^2.13.1"
   }
 }

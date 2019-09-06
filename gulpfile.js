@@ -34,12 +34,17 @@ const gulp = require('gulp'),
 // модуль для кэширования
     cache = require('gulp-cache'),
 //Модуль переноса файлов из bower в gulp
-    mainBowerFiles = require('main-bower-files');
+    mainBowerFiles = require('main-bower-files'),
+//Модуль миксинов bourbon
+    bourbon = require('node-bourbon');
 
 
 //Порядок подключения файлов со стилями
 const styleFiles = [
    './src/main_files/**/*.css',
+   './src/scss/**/vars_and_mixins.scss',
+   './src/scss/**/media_mixins.scss',
+   './src/scss/**/fonts.scss',
    './src/scss/**/*.scss',
    './src/scss/**/*.css',
    './src/scss/**/*.sass',
@@ -86,7 +91,9 @@ gulp.task('styles', () => {
 
       .pipe(sourcemaps.init())
       //Указать stylus() , sass() или less()
-      .pipe(sass())
+      .pipe(sass({
+       includePaths: bourbon.includePaths
+   }))
 
     //Объединение файлов в один
       .pipe(concat('style.css'))
