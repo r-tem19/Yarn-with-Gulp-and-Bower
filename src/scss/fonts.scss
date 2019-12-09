@@ -1,6 +1,7 @@
-@import "bourbon";
+@import "mixins";
 
 //Подключение шрифтов
-@include font-face("MyriadSetProThin", "../fonts/MyriadSetPro/MyriadSetProThin/MyriadSetProThin", $file-formats: eot woff ttf);
-@include font-face("MyriadSetProText", "../fonts/MyriadSetPro/MyriadSetProText/MyriadSetProText", $file-formats: eot woff ttf);
-@include font-face("MyriadSetProSemiBold", "../fonts/MyriadSetPro/MyriadSetProSemiBold/MyriadSetProSemiBold", $file-formats: eot woff ttf);
+// @include font-face(TTNorms-Light, "../fonts/TTNorms/TTNorms-Light");
+// @include font-face(TTNorms-Regular, "../fonts/TTNorms/TTNorms-Regular");
+// @include font-face(TTNorms-Bold, "../fonts/TTNorms/TTNorms-Bold");
+// @include font-face(TTNorms-Medium, "../fonts/TTNorms/TTNorms-Medium");

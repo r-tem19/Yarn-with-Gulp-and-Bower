@@ -1,214 +1,313 @@
 //Подключаем галп
 const gulp = require('gulp'),
-//Объединение файлов
+    //Объединение файлов
     concat = require('gulp-concat'),
-//Добапвление префиксов
+    //Добапвление префиксов
     autoprefixer = require('gulp-autoprefixer'),
-//Оптимизация html
+    //Оптимизация html
     htmlmin = require('gulp-htmlmin'),
-//Оптимизация стилей
+    //Оптимизация стилей
     cleanCSS = require('gulp-clean-css'),
-//Оптимизация скриптов
+    //Оптимизация скриптов
     uglify = require('gulp-uglify'),
-//Удаление файлов
+    //Удаление файлов
     del = require('del'),
-//Синхронизация с браузером
+    //Синхронизация с браузером
     browserSync = require('browser-sync').create(),
-//Для препроцессоров стилей
+    //Для препроцессоров стилей
     sourcemaps = require('gulp-sourcemaps'),
-//Sass препроцессор
+    //Sass препроцессор
     sass = require('gulp-sass'),
-//Модуль для сжатия изображений
+    //Модуль для сжатия изображений
     imagemin = require('gulp-imagemin'),
-// плагин для сжатия jpeg
+    // плагин для сжатия jpeg
     jpegrecompress = require('imagemin-jpeg-recompress'),
-// плагин для сжатия png
+    // плагин для сжатия png
     pngquant = require('imagemin-pngquant'),
-//Модуль переименовывания файлов
+    //Модуль переименовывания файлов
     rename = require('gulp-rename'),
-//Модуль обьеденения медиа запросов
+    //Модуль обьеденения медиа запросов
     gcmq = require('gulp-group-css-media-queries'),
-//Модуль вывода ошибок
+    //Модуль вывода ошибок
     plumber = require('gulp-plumber'),
     notify = require("gulp-notify"),
-// модуль для кэширования
+    // модуль для кэширования
     cache = require('gulp-cache'),
-//Модуль переноса файлов из bower в gulp
-    mainBowerFiles = require('main-bower-files'),
-//Модуль миксинов bourbon
-    bourbon = require('node-bourbon');
-
+    //Модуль переноса файлов из bower в gulp
+    mainBowerFiles = require('main-bower-files');
 
 //Порядок подключения файлов со стилями
 const styleFiles = [
-   './src/main_files/**/*.css',
-   './src/scss/**/vars_and_mixins.scss',
-   './src/scss/**/media_mixins.scss',
-   './src/scss/**/fonts.scss',
-   './src/scss/**/*.scss',
-   './src/scss/**/*.css',
-   './src/scss/**/*.sass',
-   './src/css/**/*.css'
-],
-//Порядок подключения js файлов
+        './src/main_files/**/*.css',
+        './src/scss/**/fonts.scss',
+        './src/scss/**/*.scss',
+        './src/scss/**/*.css',
+    ],
+    //Порядок подключения js файлов
     scriptFiles = [
-   './src/main_files/**/jquery.js',
-   './src/main_files/**/*.js',
-   './src/js/**/*.js'
-]
-
+        './src/main_files/**/jquery.js',
+        './src/main_files/**/*.js',
+        './src/js/**/*.js'
+    ]
 
 //Таск для переноса файлов из bower в gulp
 gulp.task('mainFiles', () => {
-  return gulp.src(mainBowerFiles())
-//Выходная папка для файлов из bower
-    .pipe(gulp.dest('./src/main_files'))
+    return gulp.src(mainBowerFiles())
+        //Выходная папка для файлов из bower
+        .pipe(gulp.dest('./src/main_files'))
 });
-
 
 //Таск для обработки html
 gulp.task('html', () => {
-  return gulp.src('./src/**/*.html')
-    .pipe(htmlmin({ collapseWhitespace: true }))
-//Выходная папка для html
-    .pipe(gulp.dest('./build'))
-    .pipe(browserSync.stream());
+    return gulp.src('./src/**/*.html')
+        //Выходная папка для html
+        .pipe(gulp.dest('./build'))
+        .pipe(browserSync.stream());
+});
+
+//Таск для обработки и сжатия html
+gulp.task('htmlMin', () => {
+    return gulp.src('./src/**/*.html')
+        .pipe(htmlmin({
+            collapseWhitespace: true
+        }))
+        //Выходная папка для html
+        .pipe(gulp.dest('./build'))
+        .pipe(browserSync.stream());
 });
 
 //Таск для обработки стилей
 gulp.task('styles', () => {
-   //Шаблон для поиска файлов CSS
-   //Всей файлы по шаблону './src/css/**/*.css'
-   return gulp.src(styleFiles)
+    //Шаблон для поиска файлов CSS
+    //Всей файлы по шаблону './src/css/**/*.css'
+    return gulp.src(styleFiles)
 
-    //Проверка на ошибки
-    .pipe(plumber({
-       errorHandler: notify.onError({
-           title:'Styles',
-           message:"Error: <%= error.message %>"
-      })
-    }))
+        //Проверка на ошибки
+        .pipe(plumber({
+            errorHandler: notify.onError({
+                title: 'Styles',
+                message: "Error: <%= error.message %>"
+            })
+        }))
 
-      .pipe(sourcemaps.init())
-      //Указать stylus() , sass() или less()
-      .pipe(sass({
-       includePaths: bourbon.includePaths
-   }))
+        .pipe(sourcemaps.init())
 
-    //Объединение файлов в один
-      .pipe(concat('style.css'))
+        //Указать stylus() , sass() или less()
+        .pipe(sass())
 
-    //Добавить префиксы
-      .pipe(autoprefixer({
-         overrideBrowserslist: ['last 15 versions', '> 1%', 'ie 8', 'ie 7'],
-         cascade: true
-      }))
+        //Объединение файлов в один
+        .pipe(concat('style.css'))
 
-    //Объединение медиа запросов
-      .pipe(gcmq())
+        //Добавить префиксы
+        .pipe(autoprefixer({
+            overrideBrowserslist: ['last 15 versions', '> 1%', 'ie 8', 'ie 7'],
+            cascade: true
+        }))
 
+        //Объединение медиа запросов
+        .pipe(gcmq())
 
-    //Минификация CSS
-      .pipe(cleanCSS({level: { 1: { specialComments: 0 } } }, (details) => {
+        //Добавление суфикса к сжатым файлам
+        .pipe(rename({
+            suffix: '.min'
+        }))
+
+        //Создание sourcemap
+        .pipe(sourcemaps.write('.'))
+
+        //Выходная папка для стилей
+        .pipe(gulp.dest('./build/css'))
+        .pipe(browserSync.stream());
+});
+
+//Таск для обработки и сжатия стилей
+gulp.task('stylesMin', () => {
+    //Шаблон для поиска файлов CSS
+    //Всей файлы по шаблону './src/css/**/*.css'
+    return gulp.src(styleFiles)
+
+        //Проверка на ошибки
+        .pipe(plumber({
+            errorHandler: notify.onError({
+                title: 'Styles',
+                message: "Error: <%= error.message %>"
+            })
+        }))
+
+        //Указать stylus() , sass() или less()
+        .pipe(sass())
+
+        //Объединение файлов в один
+        .pipe(concat('style.css'))
+
+        //Добавить префиксы
+        .pipe(autoprefixer({
+            overrideBrowserslist: ['last 15 versions', '> 1%', 'ie 8', 'ie 7'],
+            cascade: true
+        }))
+
+        //Объединение медиа запросов
+        .pipe(gcmq())
+
+        //Минификация CSS
+        .pipe(cleanCSS({
+            level: {
+                1: {
+                    specialComments: 0
+                }
+            }
+        }, (details) => {
             console.log(`${details.name}: ${details.stats.originalSize}`);
             console.log(`${details.name}: ${details.stats.minifiedSize}`);
         }))
 
-    //Добавление суфикса к сжатым файлам
-      .pipe(rename({ suffix: '.min', prefix : '' }))
+        //Добавление суфикса к сжатым файлам
+        .pipe(rename({
+            suffix: '.min'
+        }))
 
-    //Создание sourcemap
-      .pipe(sourcemaps.write('.'))
-
-      //Выходная папка для стилей
-      .pipe(gulp.dest('./build/css'))
-      .pipe(browserSync.stream());
+        //Выходная папка для стилей
+        .pipe(gulp.dest('./build/css'))
+        .pipe(browserSync.stream());
 });
 
 //Таск для обработки скриптов
 gulp.task('scripts', () => {
-   //Шаблон для поиска файлов JS
-   //Всей файлы по шаблону './src/js/**/*.js'
-   return gulp.src(scriptFiles)
+    //Шаблон для поиска файлов JS
+    //Всей файлы по шаблону './src/js/**/*.js'
+    return gulp.src(scriptFiles)
 
-    //Проверка на ошибки
-    .pipe(plumber({
-       errorHandler: notify.onError({
-           title:'Scripts',
-           message:"Error: <%= error.message %>"
-      })
-    }))
+        //Проверка на ошибки
+        .pipe(plumber({
+            errorHandler: notify.onError({
+                title: 'Scripts',
+                message: "Error: <%= error.message %>"
+            })
+        }))
 
-      //Объединение файлов в один
-      .pipe(concat('main.js'))
-      //Минификация JS
-      .pipe(uglify({
-         toplevel: true
-      }))
-      .pipe(rename({
-         suffix: '.min'
-      }))
+        //Объединение файлов в один
+        .pipe(concat('main.js'))
 
-      //Выходная папка для скриптов
-      .pipe(gulp.dest('./build/js'))
-      .pipe(browserSync.stream());
+        .pipe(rename({
+            suffix: '.min'
+        }))
+
+        //Выходная папка для скриптов
+        .pipe(gulp.dest('./build/js'))
+        .pipe(browserSync.stream());
+});
+
+//Таск для обработки и сжатия скриптов
+gulp.task('scriptsMin', () => {
+    //Шаблон для поиска файлов JS
+    //Всей файлы по шаблону './src/js/**/*.js'
+    return gulp.src(scriptFiles)
+
+        //Проверка на ошибки
+        .pipe(plumber({
+            errorHandler: notify.onError({
+                title: 'Scripts',
+                message: "Error: <%= error.message %>"
+            })
+        }))
+
+        //Объединение файлов в один
+        .pipe(concat('main.js'))
+        //Минификация JS
+        .pipe(uglify({
+            toplevel: true
+        }))
+        .pipe(rename({
+            suffix: '.min'
+        }))
+
+        //Выходная папка для скриптов
+        .pipe(gulp.dest('./build/js'))
+        .pipe(browserSync.stream());
 });
 
 //Таск для очистки папки build
 gulp.task('del', () => {
-   return del(['build/*'])
+    return del(['build/*'])
+});
+
+//Таск для переноса изображений
+gulp.task('img', () => {
+    return gulp.src('./src/img/**')
+        //Выходная папка для изображений
+        .pipe(gulp.dest('./build/img/'))
 });
 
 //Таск для сжатия изображений
-gulp.task('img-compress', ()=> {
-   return gulp.src('./src/img/**')
-    // сжатие изображений
-   .pipe(cache(imagemin([
-            imagemin.gifsicle({ interlaced: true }),
+gulp.task('img-compress', () => {
+    return gulp.src('./src/img/**')
+        // сжатие изображений
+        .pipe(cache(imagemin([
+            imagemin.gifsicle({
+                interlaced: true
+            }),
             jpegrecompress({
                 progressive: true,
                 max: 90,
                 min: 80
             }),
             pngquant(),
-            imagemin.svgo({ plugins: [{ removeViewBox: false }] })
+            imagemin.svgo({
+                plugins: [{
+                    removeViewBox: false
+                }]
+            })
         ])))
-    //Выходная папка для изображений
-   .pipe(gulp.dest('./build/img/'))
+        //Выходная папка для изображений
+        .pipe(gulp.dest('./build/img/'))
 });
 
 //Таск для переноса шрифтов в папку build
-gulp.task('fonts', ()=> {
-   return gulp.src('./src/fonts/**/*')
-    //Выходная папка для шрифтов
-   .pipe(gulp.dest('./build/fonts/'))
-});
-
-// очистка кэша
-gulp.task('cache:clear', ()=> {
-    cache.clearAll();
+gulp.task('fonts', () => {
+    return gulp.src('./src/fonts/**/*')
+        //Выходная папка для шрифтов
+        .pipe(gulp.dest('./build/fonts/'))
 });
 
 //Таск для отслеживания изменений в файлах
 gulp.task('watch', () => {
-   browserSync.init({
-      server: {
-         baseDir: "./build/"
-      }
-   });
-   //Следить за добавлением новых изображений
-   gulp.watch('./src/img/**', gulp.series('img-compress'))
-   //Следить за добавлением новых шрифтов
-   gulp.watch('./src/fonts/**', gulp.series('fonts'))
+    browserSync.init({
+        server: {
+            baseDir: "./build/"
+        }
+    });
+    //Следить за добавлением новых изображений
+    gulp.watch('./src/img/**', gulp.series('img'))
+    //Следить за добавлением новых шрифтов
+    gulp.watch('./src/fonts/**', gulp.series('fonts'))
     //Следить за файлами с html
-   gulp.watch('./src/**/*.html', gulp.series('html'))
-   //Следить за файлами со стилями с нужным расширением
-   gulp.watch(styleFiles, gulp.series('styles'))
-   //Следить за JS файлами
-   gulp.watch(scriptFiles, gulp.series('scripts'))
-   //При изменении HTML запустить синхронизацию
-   gulp.watch("./src/**/*.html").on('change', browserSync.reload);
+    gulp.watch('./src/**/*.html', gulp.series('html'))
+    //Следить за файлами со стилями с нужным расширением
+    gulp.watch(styleFiles, gulp.series('styles'))
+    //Следить за JS файлами
+    gulp.watch(scriptFiles, gulp.series('scripts'))
 });
 
-//Таск по умолчанию, Запускает del, styles, scripts, img-compress и watch
-gulp.task('default', gulp.series('del', gulp.parallel('html', 'styles', 'scripts', 'img-compress', 'fonts'), 'watch'));
+//Таск для отслеживания изменений в сжатых файлах
+gulp.task('watchCompress', () => {
+    browserSync.init({
+        server: {
+            baseDir: "./build/"
+        }
+    });
+    //Следить за добавлением новых изображений
+    gulp.watch('./src/img/**', gulp.series('img-compress'))
+    //Следить за добавлением новых шрифтов
+    gulp.watch('./src/fonts/**', gulp.series('fonts'))
+    //Следить за файлами с html
+    gulp.watch('./src/**/*.html', gulp.series('htmlMin'))
+    //Следить за файлами со стилями с нужным расширением
+    gulp.watch(styleFiles, gulp.series('stylesMin'))
+    //Следить за JS файлами
+    gulp.watch(scriptFiles, gulp.series('scriptsMin'))
+});
+
+//Таск по умолчанию, Запускает del, styles, scripts, img и watch
+gulp.task('default', gulp.series('del', gulp.parallel('html', 'styles', 'scripts', 'img', 'fonts'), 'watch'));
+//Таск для продакшена, Запускает del, styles, scripts, img-compress
+gulp.task('compress', gulp.series('del', gulp.parallel('htmlMin', 'stylesMin', 'scriptsMin', 'img-compress', 'fonts'), 'watchCompress'));

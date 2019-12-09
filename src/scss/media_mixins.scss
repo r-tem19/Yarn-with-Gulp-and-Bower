@@ -1,5 +1,3 @@
-@import "bourbon";
-
 //Медиа запросы
 $mobile_sm: 360px;
 $mobile_md: 480px;
@@ -10,7 +8,7 @@ $tablet: 992px;
 $desktop: 1200px;
 $desktop_lg: 1300px;
 $desktop_xl: 1440px;
-$desktop_xm: 1600px;
+$desktop_xm: 1680px;
 $desktop_xxl: 1900px;
 
 @mixin mobile_sm {
