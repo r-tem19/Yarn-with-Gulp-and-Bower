@@ -4,12 +4,14 @@ const gulp = require('gulp'),
     concat = require('gulp-concat'),
     //Добапвление префиксов
     autoprefixer = require('gulp-autoprefixer'),
-    //Оптимизация html
+    //Минимизация html
     htmlmin = require('gulp-htmlmin'),
-    //Оптимизация стилей
+    //Минимизация стилей
     cleanCSS = require('gulp-clean-css'),
-    //Оптимизация скриптов
+    //Минимизация скриптов
     uglify = require('gulp-uglify'),
+    //Оптимизация скриптов
+    babel = require('gulp-babel'),
     //Удаление файлов
     del = require('del'),
     //Синхронизация с браузером
@@ -24,8 +26,6 @@ const gulp = require('gulp'),
     jpegrecompress = require('imagemin-jpeg-recompress'),
     // плагин для сжатия png
     pngquant = require('imagemin-pngquant'),
-    //Модуль переименовывания файлов
-    rename = require('gulp-rename'),
     //Модуль обьеденения медиа запросов
     gcmq = require('gulp-group-css-media-queries'),
     //Модуль вывода ошибок
@@ -39,6 +39,7 @@ const gulp = require('gulp'),
 //Порядок подключения файлов со стилями
 const styleFiles = [
         './src/main_files/**/*.css',
+        './src/main_files/**/*.scss',
         './src/scss/**/fonts.scss',
         './src/scss/**/*.scss',
         './src/scss/**/*.css',
@@ -107,11 +108,6 @@ gulp.task('styles', () => {
         //Объединение медиа запросов
         .pipe(gcmq())
 
-        //Добавление суфикса к сжатым файлам
-        .pipe(rename({
-            suffix: '.min'
-        }))
-
         //Создание sourcemap
         .pipe(sourcemaps.write('.'))
 
@@ -161,11 +157,6 @@ gulp.task('stylesMin', () => {
             console.log(`${details.name}: ${details.stats.minifiedSize}`);
         }))
 
-        //Добавление суфикса к сжатым файлам
-        .pipe(rename({
-            suffix: '.min'
-        }))
-
         //Выходная папка для стилей
         .pipe(gulp.dest('./build/css'))
         .pipe(browserSync.stream());
@@ -188,10 +179,6 @@ gulp.task('scripts', () => {
         //Объединение файлов в один
         .pipe(concat('main.js'))
 
-        .pipe(rename({
-            suffix: '.min'
-        }))
-
         //Выходная папка для скриптов
         .pipe(gulp.dest('./build/js'))
         .pipe(browserSync.stream());
@@ -213,12 +200,15 @@ gulp.task('scriptsMin', () => {
 
         //Объединение файлов в один
         .pipe(concat('main.js'))
+
+        // Подключение babel
+        .pipe(babel({
+            presets: ['es2015']
+        }))
+
         //Минификация JS
         .pipe(uglify({
             toplevel: true
-        }))
-        .pipe(rename({
-            suffix: '.min'
         }))
 
         //Выходная папка для скриптов
