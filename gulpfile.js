@@ -47,6 +47,17 @@ const styleFiles = [
     //Порядок подключения js файлов
     scriptFiles = [
         './src/main_files/**/jquery.js',
+        './src/main_files/**/jquery.min.js',
+        './src/main_files/**/gsap.js',
+        './src/main_files/**/gsap.min.js',
+        './src/main_files/**/TweenMax.js',
+        './src/main_files/**/TweenMax.min.js',
+        './src/main_files/**/ScrollToPlugin.js',
+        './src/main_files/**/ScrollToPlugin.min.js',
+        './src/main_files/**/ScrollMagic.js',
+        './src/main_files/**/ScrollMagic.min.js',
+        './src/main_files/**/animation.gsap.js',
+        './src/main_files/**/animation.gsap.min.js',
         './src/main_files/**/*.js',
         './src/js/**/*.js'
     ]
